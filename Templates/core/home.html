@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+{% block content %}
+<h1>Featured products</h1>
+<div class="grid">
+  {% for p in products %}
+    <div class="card">
+      <h3><a href="{{ p.get_absolute_url }}">{{ p.title }}</a></h3>
+      <p>{{ p.price }} {{ CURRENCY|default:"$" }}</p>
+      <a class="btn" href="{% url 'add_to_cart' p.id %}">Add to cart</a>
+    </div>
+  {% empty %}
+    <p>No products yet.</p>
+  {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Checkout{% endblock %}
+{% block content %}
+<h1>Checkout</h1>
+<form method="post">{% csrf_token %}
+  <label>Email</label><br>
+  <input type="email" name="email" required>
+  <button class="btn" type="submit">Place order</button>
+</form>
+{% endblock %}

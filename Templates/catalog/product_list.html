@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Products{% endblock %}
+{% block content %}
+<h1>Products</h1>
+
+<form method="get" style="margin: 10px 0;">
+  <input name="q" placeholder="Search..." value="{{ request.GET.q }}">
+  <button class="btn" type="submit">Search</button>
+</form>
+
+<div class="grid">
+  {% for p in object_list %}
+    <div class="card">
+      <h3><a href="{{ p.get_absolute_url }}">{{ p.title }}</a></h3>
+      <p>{{ p.price }}</p>
+      <a class="btn" href="{% url 'add_to_cart' p.id %}">Add to cart</a>
+    </div>
+  {% empty %}
+    <p>No products available.</p>
+  {% endfor %}
+</div>
+{% endblock %}

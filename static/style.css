@@ -1,0 +1,9 @@
+body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin:0; padding:0; background:#fafafa;}
+.nav { background:#111; color:#fff; padding:12px; display:flex; gap:16px;}
+.nav a { color:#fff; text-decoration:none; }
+.container { padding: 20px; max-width: 980px; margin: 0 auto; }
+.grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(220px,1fr)); gap:16px; }
+.card { background:#fff; border:1px solid #eee; border-radius:12px; padding:16px; }
+.btn { display:inline-block; border:1px solid #111; padding:8px 12px; border-radius:8px; text-decoration:none; }
+.table { width:100%; border-collapse: collapse; background:#fff; }
+.table th, .table td { border:1px solid #ddd; padding:8px; text-align:left; }
