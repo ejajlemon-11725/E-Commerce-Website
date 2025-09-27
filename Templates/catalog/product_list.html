@@ -1,22 +1,76 @@
 {% extends "base.html" %}
 {% block title %}Products{% endblock %}
+
 {% block content %}
-<h1>Products</h1>
+<div class="container my-5">
+  <h1 class="text-center text-primary fw-bold mb-4">🛍️ All Products</h1>
 
-<form method="get" style="margin: 10px 0;">
-  <input name="q" placeholder="Search..." value="{{ request.GET.q }}">
-  <button class="btn" type="submit">Search</button>
-</form>
+  <!-- Search Bar -->
+  <form method="get" class="d-flex justify-content-center mb-4">
+    <input
+      name="q"
+      class="form-control w-50 me-2 rounded-pill shadow-sm"
+      placeholder="🔍 Search products..."
+      value="{{ request.GET.q }}"
+    >
+    <button class="btn btn-primary rounded-pill px-4 shadow-sm" type="submit">
+      Search
+    </button>
+  </form>
 
-<div class="grid">
-  {% for p in object_list %}
-    <div class="card">
-      <h3><a href="{{ p.get_absolute_url }}">{{ p.title }}</a></h3>
-      <p>{{ p.price }}</p>
-      <a class="btn" href="{% url 'add_to_cart' p.id %}">Add to cart</a>
-    </div>
-  {% empty %}
-    <p>No products available.</p>
-  {% endfor %}
+  <!-- Products Grid -->
+  <div class="row g-4">
+    {% for p in object_list %}
+      <div class="col-md-4 col-lg-3">
+        <div class="card shadow-sm border-0 rounded-4 h-100">
+          <!-- Product Image Placeholder -->
+          <div class="bg-light d-flex align-items-center justify-content-center"
+               style="height: 180px; border-top-left-radius: 1rem; border-top-right-radius: 1rem;">
+            <span class="text-muted">📦 Image</span>
+          </div>
+
+          <div class="card-body d-flex flex-column">
+            <h5 class="card-title fw-semibold">
+              <a href="{{ p.get_absolute_url }}" class="text-decoration-none text-dark">
+                {{ p.title }}
+              </a>
+            </h5>
+            <p class="card-text text-success fw-bold mb-3">
+              {{ p.price }} {{ CURRENCY|default:"$" }}
+            </p>
+
+            <a href="{% url 'add_to_cart' p.id %}"
+               class="btn btn-success mt-auto rounded-pill shadow-sm">
+              🛒 Add to cart
+            </a>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <div class="col-12">
+        <p class="text-center text-muted">No products available.</p>
+      </div>
+    {% endfor %}
+  </div>
 </div>
+
+<style>
+  body {
+    background: linear-gradient(120deg, #f9fcff, #e6f7ff);
+  }
+  .card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+  }
+  .btn-success {
+    transition: all 0.3s ease;
+  }
+  .btn-success:hover {
+    background-color: #218838;
+    transform: scale(1.05);
+  }
+</style>
 {% endblock %}

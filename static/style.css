@@ -1,9 +1,198 @@
-body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin:0; padding:0; background:#fafafa;}
-.nav { background:#111; color:#fff; padding:12px; display:flex; gap:16px;}
-.nav a { color:#fff; text-decoration:none; }
-.container { padding: 20px; max-width: 980px; margin: 0 auto; }
-.grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(220px,1fr)); gap:16px; }
-.card { background:#fff; border:1px solid #eee; border-radius:12px; padding:16px; }
-.btn { display:inline-block; border:1px solid #111; padding:8px 12px; border-radius:8px; text-decoration:none; }
-.table { width:100%; border-collapse: collapse; background:#fff; }
-.table th, .table td { border:1px solid #ddd; padding:8px; text-align:left; }
+/* -------------------- GENERAL STYLING -------------------- */
+body {
+    font-family: 'Poppins', system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(135deg, #f9fcff, #e6f7ff); /* Soft pastel gradient */
+    color: #333;
+    line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+}
+
+/* -------------------- NAVBAR -------------------- */
+.navbar {
+    background: linear-gradient(90deg, #007bff, #6610f2); /* Blue → Purple gradient */
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.navbar-brand {
+    font-size: 1.6rem;
+    font-weight: 700;
+}
+
+.nav-link {
+    color: #fff !important;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.nav-link:hover {
+    color: #ffe082 !important;
+    transform: scale(1.05);
+}
+
+/* -------------------- BUTTONS -------------------- */
+.btn {
+    font-weight: 600;
+    border-radius: 30px;
+    padding: 0.6rem 1.5rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background: linear-gradient(45deg, #007bff, #00c6ff);
+    border: none;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(45deg, #0056b3, #0099cc);
+    transform: scale(1.05);
+}
+
+.btn-success {
+    background: linear-gradient(45deg, #28a745, #66bb6a);
+    border: none;
+}
+
+.btn-success:hover {
+    background: linear-gradient(45deg, #218838, #4caf50);
+    transform: scale(1.05);
+}
+
+.btn-outline-danger {
+    border-radius: 30px;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-danger:hover {
+    background-color: #dc3545;
+    color: #fff;
+    transform: scale(1.05);
+}
+
+/* -------------------- CARDS / PRODUCTS -------------------- */
+.card {
+    border: none;
+    border-radius: 1rem;
+    background: #fff;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 28px rgba(0,0,0,0.15);
+}
+
+.card .bg-light {
+    background: #f1f3f5;
+    font-size: 2rem;
+    color: #888;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* -------------------- PRODUCT GRID -------------------- */
+.grid, .row.g-4 {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 28px;
+}
+
+/* -------------------- TABLES -------------------- */
+.table {
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    background: #fff;
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th, .table td {
+    padding: 14px 16px;
+    border: 1px solid #e0e0e0;
+    text-align: center;
+}
+
+.table th {
+    background: linear-gradient(90deg, #cfe2ff, #b6d4fe);
+    font-weight: 600;
+}
+
+.table tr:nth-child(even) {
+    background-color: #f8f9fa;
+}
+
+.table tr:hover {
+    background-color: #e3f2fd;
+    transition: background-color 0.2s ease;
+}
+
+/* -------------------- INPUTS / FORMS -------------------- */
+input, select, textarea {
+    border-radius: 30px;
+    border: 1px solid #ced4da;
+    padding: 10px 15px;
+    outline: none;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+input:focus, select:focus, textarea:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0,123,255,0.3);
+}
+
+/* -------------------- FOOTER -------------------- */
+footer {
+    background: linear-gradient(90deg, #343a40, #212529);
+    color: #ddd;
+    text-align: center;
+    padding: 20px 0;
+    font-size: 0.9rem;
+}
+
+/* -------------------- RESPONSIVE -------------------- */
+@media (max-width: 768px) {
+    .card .bg-light {
+        height: 200px;
+    }
+
+    .grid, .row.g-4 {
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 20px;
+    }
+
+    .table thead {
+        display: none;
+    }
+
+    .table, .table tbody, .table tr, .table td {
+        display: block;
+        width: 100%;
+    }
+
+    .table tr {
+        margin-bottom: 15px;
+    }
+
+    .table td {
+        text-align: right;
+        padding-left: 50%;
+        position: relative;
+    }
+
+    .table td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 15px;
+        width: 45%;
+        text-align: left;
+        font-weight: 600;
+    }
+}

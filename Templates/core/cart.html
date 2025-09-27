@@ -1,25 +1,81 @@
 {% extends "base.html" %}
 {% block title %}Cart{% endblock %}
+
 {% block content %}
-<h1>Your Cart</h1>
-<table class="table">
-  <tr><th>Product</th><th>Qty</th><th>Price</th><th>Total</th><th></th></tr>
-  {% for item in cart %}
-    <tr>
-      <td>{{ item.product.title }}</td>
-      <td>{{ item.quantity }}</td>
-      <td>{{ item.price }}</td>
-      <td>{{ item.total }}</td>
-      <td><a href="{% url 'remove_from_cart' item.product.id %}">Remove</a></td>
-    </tr>
-  {% empty %}
-    <tr><td colspan="5">Cart is empty.</td></tr>
-  {% endfor %}
-</table>
-<p><strong>Total:</strong> {{ cart.total_price }}</p>
-{% if cart.is_empty %}
-  <p>Add some items to proceed.</p>
-{% else %}
-  <a class="btn" href="{% url 'checkout' %}">Checkout</a>
-{% endif %}
+<div class="container my-5">
+  <h1 class="text-center mb-4 text-primary fw-bold">🛒 Your Shopping Cart</h1>
+
+  <div class="card shadow-lg border-0 rounded-3">
+    <div class="card-body p-4">
+      <table class="table table-hover align-middle text-center">
+        <thead class="table-primary">
+          <tr>
+            <th scope="col">Product</th>
+            <th scope="col">Qty</th>
+            <th scope="col">Price</th>
+            <th scope="col">Total</th>
+            <th scope="col">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in cart %}
+            <tr>
+              <td class="fw-semibold">{{ item.product.title }}</td>
+              <td>{{ item.quantity }}</td>
+              <td>${{ item.price }}</td>
+              <td class="fw-bold text-success">${{ item.total }}</td>
+              <td>
+                <a href="{% url 'remove_from_cart' item.product.id %}"
+                   class="btn btn-sm btn-outline-danger">
+                  ✖ Remove
+                </a>
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="5" class="text-muted">Your cart is empty 🛍️</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <div class="d-flex justify-content-between align-items-center mt-4">
+        <p class="h5">
+          <strong>Total:</strong>
+          <span class="text-primary">${{ cart.total_price }}</span>
+        </p>
+
+        {% if cart.is_empty %}
+          <p class="text-muted">Add some items to proceed.</p>
+        {% else %}
+          <a class="btn btn-lg btn-success shadow-sm px-4" href="{% url 'checkout' %}">
+            ✅ Checkout
+          </a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  body {
+    background: linear-gradient(120deg, #f6f9fc, #e9f4ff);
+  }
+  .card {
+    background: #ffffff;
+    border-radius: 1rem;
+  }
+  .btn-success {
+    border-radius: 2rem;
+    transition: 0.3s;
+  }
+  .btn-success:hover {
+    background-color: #28a745;
+    transform: scale(1.05);
+  }
+  .btn-outline-danger:hover {
+    background-color: #dc3545;
+    color: #fff;
+  }
+</style>
 {% endblock %}
