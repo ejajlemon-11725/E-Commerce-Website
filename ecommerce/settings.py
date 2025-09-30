@@ -22,7 +22,8 @@ INSTALLED_APPS = [
     "payments",
 ]
 
-AUTH_USER_MODEL = "accounts.User"
+AUTH_USER_MODEL = 'accounts.CustomUser'
+
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -76,6 +77,10 @@ TIME_ZONE = "Asia/Dhaka"
 USE_I18N = True
 USE_TZ = True
 
+LOGIN_REDIRECT_URL = 'home'          # name of home url (we add this below)
+LOGOUT_REDIRECT_URL = 'home'
+LOGIN_URL = 'login'
+
 STATIC_URL = "/static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
@@ -86,6 +91,9 @@ MEDIA_ROOT = BASE_DIR / "media"
 
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
+DEFAULT_FROM_EMAIL = "webmaster@localhost"
+
+
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Payments
@@ -93,3 +101,32 @@ STRIPE_PUBLIC_KEY = os.getenv("STRIPE_PUBLIC_KEY", "")
 STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY", "")
 # Use "usd" by default. (Some processors don’t support BDT directly.)
 CURRENCY = "usd"
+
+
+
+
+# --- bKash ---
+BKASH = {
+    "SANDBOX": True,
+    # Tokenized Checkout v1.2.0-beta base (bKash docs)
+    # Sandbox: https://tokenized.sandbox.bka.sh/v1.2.0-beta/tokenized
+    # Live:    https://tokenized.pay.bka.sh/v1.2.0-beta/tokenized
+    "BASE_URL": os.getenv("BKASH_BASE_URL", "https://tokenized.sandbox.bka.sh/v1.2.0-beta/tokenized"),
+    "APP_KEY": os.getenv("BKASH_APP_KEY", ""),
+    "APP_SECRET": os.getenv("BKASH_APP_SECRET", ""),
+    "USERNAME": os.getenv("BKASH_USERNAME", ""),
+    "PASSWORD": os.getenv("BKASH_PASSWORD", ""),
+}
+
+# --- Nagad ---
+NAGAD = {
+    "BASE_URL": os.getenv("NAGAD_BASE_URL", "https://sandbox-ssl.mynagad.com:10061"),  # sandbox host seen in examples
+    "MERCHANT_ID": os.getenv("NAGAD_MERCHANT_ID", ""),
+    "PUBLIC_KEY": os.getenv("NAGAD_PUBLIC_KEY", ""),     # PEM string
+    "PRIVATE_KEY": os.getenv("NAGAD_PRIVATE_KEY", ""),   # PEM string
+    "CALLBACK_URL": os.getenv("NAGAD_CALLBACK_URL", "https://example.com/payments/nagad/callback/"),
+}
+
+# Where bKash should return your customer (this must be publicly reachable)
+PAYMENT_RETURN_SUCCESS_URL = os.getenv("PAYMENT_SUCCESS_URL", "/payments/success/")
+PAYMENT_RETURN_FAIL_URL    = os.getenv("PAYMENT_FAIL_URL", "/payments/fail/")

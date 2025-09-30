@@ -25,3 +25,11 @@ def checkout_view(request):
 
 def success_view(request):
     return render(request, "orders/success.html")
+
+def cart_detail(request):
+    # Example: cart logic
+    cart_count = 0  # replace with real cart count if you have a cart session
+    context = {
+        "cart_count": cart_count,
+    }
+    return render(request, "orders/cart_detail.html", context)

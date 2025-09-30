@@ -1,36 +1,126 @@
-from django.shortcuts import get_object_or_404, redirect
-from django.http import HttpResponse
-from django.urls import reverse
+# payments/views.py
+import uuid
+from decimal import Decimal
 from django.conf import settings
-from orders.models import Order
-import stripe
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
+from django.views.decorators.csrf import csrf_exempt
+from django.http import HttpResponse
+from .models import Payment
+from .services import bkash, nagad
+
+
+def _order_amount(order):
+    return Decimal(getattr(order, "total", "0.00"))
+
+
+def checkout(request, order_id):
+    from orders.models import Order
+    order = get_object_or_404(Order, pk=order_id)
+    amount = _order_amount(order)
+    return render(request, "payments/checkout.html", {"order": order, "amount": amount})
+
 
 def payment_create(request, order_id):
-    order = get_object_or_404(Order, id=order_id)
-    stripe.api_key = settings.STRIPE_SECRET_KEY or None
+    return HttpResponse(f"Payment created for order {order_id}")
 
-    # Dev fallback: if no Stripe key, mark paid directly
-    if not stripe.api_key:
-        order.status = Order.PAID
-        order.save()
-        return redirect("order_success")
 
-    session = stripe.checkout.Session.create(
-        payment_method_types=["card"],
-        line_items=[{
-            "price_data": {
-                "currency": settings.CURRENCY,
-                "product_data": {"name": f"Order #{order.id}"},
-                "unit_amount": int(order.total * 100),
-            },
-            "quantity": 1,
-        }],
-        mode="payment",
-        success_url=request.build_absolute_uri(reverse("order_success")),
-        cancel_url=request.build_absolute_uri(reverse("checkout")),
+def payment_success(request):
+    return render(request, "payments/success.html")
+
+
+def payment_fail(request):
+    return render(request, "payments/fail.html")
+
+
+# ---------------- bKash ----------------
+def bkash_create(request, order_id):
+    from orders.models import Order
+    order = get_object_or_404(Order, pk=order_id)
+    amount = _order_amount(order)
+    invoice = f"INV-{order_id}-{uuid.uuid4().hex[:8].upper()}"
+
+    p = Payment.objects.create(
+        user=request.user if request.user.is_authenticated else None,
+        order=order,
+        gateway="bkash",
+        amount=amount,
+        invoice_no=invoice,
+        status="initiated"
     )
-    return redirect(session.url, code=303)
 
+    callback_url = request.build_absolute_uri(reverse("payments:bkash_callback"))
+    resp = bkash.create_payment(amount=amount, invoice_no=invoice, callback_url=callback_url)
+    p.provider_payment_id = resp.get("paymentID", "")
+    p.meta = resp
+    p.status = "redirected"
+    p.save(update_fields=["provider_payment_id", "meta", "status"])
+    return redirect(resp["bkashURL"])
+
+
+@csrf_exempt
+def bkash_callback(request):
+    payment_id = request.GET.get("paymentID") or request.POST.get("paymentID")
+    status = request.GET.get("status") or request.POST.get("status")
+    payment = Payment.objects.filter(provider_payment_id=payment_id, gateway="bkash").order_by("-id").first()
+
+    try:
+        exec_resp = bkash.execute_payment(payment_id)
+        ok = str(exec_resp.get("transactionStatus", "")).lower() in ("completed", "success") or exec_resp.get("statusCode") in ("0000", "000")
+        if payment:
+            payment.mark("success" if ok else "failed", meta={"callback_status": status, "execute": exec_resp})
+        return redirect(settings.PAYMENT_RETURN_SUCCESS_URL if ok else settings.PAYMENT_RETURN_FAIL_URL)
+    except Exception as e:
+        if payment:
+            payment.mark("failed", meta={"error": str(e), "callback_status": status})
+        return redirect(settings.PAYMENT_RETURN_FAIL_URL)
+
+
+# ---------------- Nagad ----------------
+def nagad_create(request, order_id):
+    from orders.models import Order
+    order = get_object_or_404(Order, pk=order_id)
+    amount = _order_amount(order)
+    invoice = f"INV-{order_id}-{uuid.uuid4().hex[:8].upper()}"
+
+    p = Payment.objects.create(
+        user=request.user if request.user.is_authenticated else None,
+        order=order,
+        gateway="nagad",
+        amount=amount,
+        invoice_no=invoice,
+        status="initiated"
+    )
+    callback_url = settings.NAGAD["CALLBACK_URL"]
+    client_ip = request.META.get("REMOTE_ADDR")
+    resp = nagad.init_checkout(amount=amount, invoice_number=invoice, client_ip=client_ip)
+    p.status = "redirected"
+    p.meta = resp
+    p.save(update_fields=["status", "meta"])
+    return redirect(resp["callBackUrl"])
+
+
+@csrf_exempt
+def nagad_callback(request):
+    qs = request.GET.dict()
+    ref_id = qs.get("payment_ref_id") or qs.get("paymentRefId") or ""
+    order_id = qs.get("order_id") or qs.get("invoice_number")
+    pay = Payment.objects.filter(invoice_no=order_id, gateway="nagad").order_by("-id").first()
+
+    try:
+        v = nagad.verify(ref_id)
+        ok = (v.get("statusCode") == "000" and v.get("status") == "Success" and bool(v.get("issuerPaymentRefNo")))
+        if pay:
+            pay.provider_payment_id = ref_id
+            pay.mark("success" if ok else "failed", meta={"callback": qs, "verify": v})
+        return redirect(settings.PAYMENT_RETURN_SUCCESS_URL if ok else settings.PAYMENT_RETURN_FAIL_URL)
+    except Exception as e:
+        if pay:
+            pay.mark("failed", meta={"callback": qs, "error": str(e)})
+        return redirect(settings.PAYMENT_RETURN_FAIL_URL)
+
+
+# ---------------- Stripe ----------------
+@csrf_exempt
 def stripe_webhook(request):
-    # TODO: verify signature & update order status
-    return HttpResponse(status=200)
+    return HttpResponse("Stripe webhook received")

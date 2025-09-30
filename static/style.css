@@ -196,3 +196,31 @@ footer {
         font-weight: 600;
     }
 }
+
+:root {
+  --primary: #0d6efd;
+  --muted: #6c757d;
+  --bg: #f8f9fa;
+}
+
+body {
+  font-family: 'Poppins', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  background-color: var(--bg);
+}
+
+.navbar-brand {
+  font-size: 1.15rem;
+}
+
+.card-title {
+  font-weight: 600;
+}
+
+.btn.rounded-pill {
+  border-radius: 999px;
+}
+
+/* small helpers */
+.lead {
+  color: var(--muted);
+}

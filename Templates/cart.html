@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block title %}Your Cart - My Shop{% endblock %}
+
+{% block content %}
+<h1 class="text-center mb-4 text-primary fw-bold">🛒 Your Shopping Cart 🛍️</h1>
+
+{% if cart_items %}
+  <div class="table-responsive">
+    <table class="table table-hover align-middle">
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>Quantity</th>
+          <th>Price</th>
+          <th>Total</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in cart_items %}
+          <tr>
+            <td class="fw-semibold">📦 {{ item.product.title }}</td>
+            <td>🧮 {{ item.quantity }}</td>
+            <td>💰 ${{ item.price }}</td>
+            <td class="fw-bold text-success">💵 ${{ item.total }}</td>
+            <td>
+              <a href="{% url 'remove_from_cart' item.product.id %}" class="btn btn-outline-danger btn-sm">✖ Remove</a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="text-end mt-4">
+    <a href="{% url 'checkout' %}" class="btn btn-primary btn-lg">Proceed to Checkout</a>
+    {% if order %}
+      <a class="btn btn-success btn-lg" href="{% url 'payments:checkout' order.id %}">Proceed to Payment 💳</a>
+    {% endif %}
+  </div>
+{% else %}
+  <p class="text-center">Your cart is empty.</p>
+{% endif %}
+{% endblock %}
