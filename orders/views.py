@@ -1,7 +1,12 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render,get_object_or_404, redirect
 from django.contrib import messages
 from .models import Order, OrderItem
 from core.cart import Cart
+from django.shortcuts import render, get_object_or_404, redirect
+from django.views.decorators.http import require_POST
+from django.urls import reverse
+from catalog.models import Product
+from .cart import Cart
 
 def checkout_view(request):
     cart = Cart(request)
@@ -33,3 +38,31 @@ def cart_detail(request):
         "cart_count": cart_count,
     }
     return render(request, "orders/cart_detail.html", context)
+
+def cart_detail(request):
+    cart = Cart(request)
+    return render(request, "cart.html", {"cart": cart})
+
+@require_POST
+def add_to_cart(request, product_id):
+    cart = Cart(request)
+    product = get_object_or_404(Product, id=product_id)
+    qty = int(request.POST.get("quantity", 1))
+    cart.add(product=product, quantity=qty, override_quantity=False)
+    next_url = request.POST.get("next") or request.META.get("HTTP_REFERER") or reverse("cart_detail")
+    return redirect(next_url)
+
+@require_POST
+def update_cart(request, product_id):
+    cart = Cart(request)
+    product = get_object_or_404(Product, id=product_id)
+    qty = max(1, int(request.POST.get("quantity", 1)))
+    cart.add(product=product, quantity=qty, override_quantity=True)
+    return redirect("cart_detail")
+
+@require_POST
+def remove_from_cart(request, product_id):
+    cart = Cart(request)
+    product = get_object_or_404(Product, id=product_id)
+    cart.remove(product)
+    return redirect("cart_detail")

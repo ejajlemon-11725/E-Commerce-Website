@@ -22,6 +22,8 @@ INSTALLED_APPS = [
     "payments",
 ]
 
+CART_SESSION_ID = "cart"
+
 AUTH_USER_MODEL = 'accounts.CustomUser'
 
 
@@ -55,6 +57,9 @@ TEMPLATES = [
     },
 ]
 
+TEMPLATES[0]["OPTIONS"]["context_processors"] += [
+    "orders.context_processors.cart",
+]
 WSGI_APPLICATION = "ecommerce.wsgi.application"
 
 DATABASES = {

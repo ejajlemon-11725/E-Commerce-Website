@@ -1,59 +1,16 @@
 {% extends "base.html" %}
-{% block title %}{{ object.title }}{% endblock %}
-
+{% block title %}{{ product.title }}{% endblock %}
 {% block content %}
-<div class="container my-5">
-  <div class="row justify-content-center">
-    <div class="col-md-8 col-lg-6">
-      <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
-
-        <!-- Product Image Placeholder -->
-        <div class="bg-light d-flex align-items-center justify-content-center"
-             style="height: 300px;">
-          <span class="text-muted fs-4">📦 Product Image</span>
-        </div>
-
-        <div class="card-body p-4">
-          <h2 class="card-title text-center text-primary fw-bold mb-3">
-            {{ object.title }}
-          </h2>
-          <p class="card-text text-muted mb-4">
-            {{ object.description }}
-          </p>
-
-          <p class="h5 text-success fw-bold mb-4 text-center">
-            Price: {{ object.price }} {{ CURRENCY|default:"$" }}
-          </p>
-
-          <div class="d-flex justify-content-center">
-            <a href="{% url 'add_to_cart' object.id %}"
-               class="btn btn-lg btn-success rounded-pill shadow-sm px-4">
-              🛒 Add to Cart
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
+<div style="display:grid;grid-template-columns:320px 1fr;gap:24px;align-items:start">
+  <img src="{{ product.image.url|default:'/static/no-image.png' }}" alt="{{ product.title }}" style="width:100%;border-radius:12px;border:1px solid #e5e7eb">
+  <div>
+    <h2 style="margin-top:0">{{ product.title }}</h2>
+    <p>{{ product.short_description }}</p>
+    <p style="font-size:20px;font-weight:700">৳ {{ product.price|floatformat:"0" }}
+      {% if product.old_price %}<span style="text-decoration:line-through;color:#6b7280;font-size:16px;margin-left:8px;">৳ {{ product.old_price|floatformat:"0" }}</span>{% endif %}
+    </p>
+    <p>{% if product.in_stock %}✅ In stock ({{ product.stock }}){% else %}❌ Out of stock{% endif %}</p>
+    <a href="#" class="btn">Add to Cart (demo)</a>
   </div>
 </div>
-
-<style>
-  body {
-    background: linear-gradient(120deg, #f9fcff, #e6f7ff);
-  }
-  .card {
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-  }
-  .card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-  }
-  .btn-success {
-    transition: all 0.3s ease;
-  }
-  .btn-success:hover {
-    background-color: #28a745;
-    transform: scale(1.05);
-  }
-</style>
 {% endblock %}
