@@ -14,7 +14,7 @@ urlpatterns = [
     path("orders/", include("orders.urls")),
     path("payments/", include("payments.urls", namespace="payments")),
     path('', catalog_views.home, name='home'),
-    path('', catalog_views.home, name='home'),
+
 ]
 
 if settings.DEBUG:

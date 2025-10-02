@@ -1,6 +1,6 @@
-<form action="{% url 'cart_add' product.id %}" method="post" class="inline">
+<form action="{% url 'orders:cart_add' product.id %}" method="post" class="inline">
   {% csrf_token %}
-  <input type="number" name="quantity" value="1" min="1" style="width:70px;">
+  <input type="number" name="qty" value="1" min="1" style="width:70px;">
   <input type="hidden" name="next" value="{{ request.get_full_path }}">
   <button type="submit">Add to Cart</button>
 </form>

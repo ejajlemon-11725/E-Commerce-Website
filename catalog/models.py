@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 from django.utils.text import slugify
 
 class Category(models.Model):
@@ -6,6 +7,8 @@ class Category(models.Model):
     slug = models.SlugField(max_length=140, unique=True, blank=True)
     description = models.TextField(blank=True)
     image = models.ImageField(upload_to="category_images/", blank=True, null=True)
+    price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    is_active = models.BooleanField(default=True)
 
     class Meta:
         verbose_name_plural = "Categories"
@@ -22,6 +25,7 @@ class Category(models.Model):
     @property
     def product_count(self):
         return self.products.filter(is_active=True).count()
+
 
 
 class Product(models.Model):
@@ -55,7 +59,7 @@ class Product(models.Model):
         return self.stock > 0
 
     @property
-    def discount_percent(self):
-        if self.old_price and self.old_price > 0 and self.price < self.old_price:
-            return int(round(100 - (float(self.price) / float(self.old_price) * 100)))
-        return None
+    def discount_percentage(self):
+        if self.old_price and self.old_price > self.price:
+            return round(((self.old_price - self.price) / self.old_price) * 100)
+        return 0

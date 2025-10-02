@@ -51,15 +51,13 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
-                "core.context_processors.cart",
+                "orders.context_processors.cart_summary",
             ],
         },
     },
 ]
 
-TEMPLATES[0]["OPTIONS"]["context_processors"] += [
-    "orders.context_processors.cart",
-]
+
 WSGI_APPLICATION = "ecommerce.wsgi.application"
 
 DATABASES = {

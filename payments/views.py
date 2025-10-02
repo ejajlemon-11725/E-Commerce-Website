@@ -8,16 +8,33 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
 from .models import Payment
 from .services import bkash, nagad
+from orders.cart import Cart
+from orders.models import Order, OrderItem
+from django.contrib.auth.decorators import login_required
 
 
 def _order_amount(order):
     return Decimal(getattr(order, "total", "0.00"))
 
 
-def checkout(request, order_id):
+@login_required
+def checkout_view(request):
     from orders.models import Order
-    order = get_object_or_404(Order, pk=order_id)
-    amount = _order_amount(order)
+    from orders.cart import Cart
+
+    cart = Cart(request)
+
+    if len(cart) == 0:  # <-- check if cart is empty
+        # Redirect to cart page if empty
+        return redirect('orders:cart_detail')
+
+    # Create order using actual total
+    order = Order.objects.create(
+        user=request.user if request.user.is_authenticated else None,
+        total=cart.get_total()  # <-- CALL the method to get decimal
+    )
+
+    amount = order.total
     return render(request, "payments/checkout.html", {"order": order, "amount": amount})
 
 
@@ -35,7 +52,6 @@ def payment_fail(request):
 
 # ---------------- bKash ----------------
 def bkash_create(request, order_id):
-    from orders.models import Order
     order = get_object_or_404(Order, pk=order_id)
     amount = _order_amount(order)
     invoice = f"INV-{order_id}-{uuid.uuid4().hex[:8].upper()}"
@@ -78,7 +94,6 @@ def bkash_callback(request):
 
 # ---------------- Nagad ----------------
 def nagad_create(request, order_id):
-    from orders.models import Order
     order = get_object_or_404(Order, pk=order_id)
     amount = _order_amount(order)
     invoice = f"INV-{order_id}-{uuid.uuid4().hex[:8].upper()}"

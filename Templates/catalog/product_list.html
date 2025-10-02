@@ -2,59 +2,46 @@
 {% load static %}
 {% block title %}{{ category.name }}{% endblock %}
 {% block content %}
+
 <h2 class="mb-3">{{ category.name }}</h2>
 
-<style>
-.grid {display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px}
-.card{border:1px solid #e6e6e6;border-radius:12px;overflow:hidden;background:#fff}
-.thumb{aspect-ratio:16/11;object-fit:cover;width:100%}
-.body{padding:12px 14px}
-.h5{font-size:16px;margin:0 0 6px;line-height:1.3}
-.badges{display:flex;gap:8px;align-items:center;margin:6px 0}
-.badge{font-size:12px;padding:2px 8px;border-radius:999px;border:1px solid #d1d5db}
-.badge.green{color:#065f46;border-color:#34d399}
-.price{display:flex;gap:10px;align-items:baseline}
-.new{font-weight:700}
-.old{text-decoration:line-through;color:#6b7280;font-size:14px}
-.discount{margin-left:auto;font-size:12px;background:#ef4444;color:#fff;padding:2px 6px;border-radius:6px}
-.btn{display:inline-block;margin-top:10px;background:#10b981;color:#fff;padding:8px 12px;border-radius:8px;text-decoration:none}
-</style>
+<div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3">
+  {% for product in products %}
+    <div class="col">
+      <div class="card h-100">
+        <a href="{% url 'catalog:product_detail' product.category.slug product.slug %}">
+          {% if product.image %}
+            <img src="{{ product.image.url }}" alt="{{ product.title }}" class="card-img-top" style="height:180px; object-fit:cover;">
+          {% else %}
+            <img src="{% static 'img/placeholder.png' %}" alt="No image" class="card-img-top" style="height:180px; object-fit:cover;">
+          {% endif %}
+        </a>
 
-<div class="grid">
-{% for p in products %}
-  <div class="card">
-    <a href="{% url 'catalog:product_detail' category.slug p.slug %}">
-      {% if p.image %}
-        <img class="thumb" src="{{ p.image.url }}" alt="{{ p.title }}">
-      {% else %}
-        <img class="thumb" src="{% static 'images/placeholder.png' %}" alt="No image">
-      {% endif %}
-    </a>
-    <div class="body">
-      <div class="h5">
-        <a href="{% url 'catalog:product_detail' category.slug p.slug %}" style="text-decoration:none;color:inherit">{{ p.title }}</a>
+        <div class="card-body d-flex flex-column">
+          <h6 class="card-title">{{ product.title }}</h6>
+
+          {% if product.old_price and product.old_price > product.price %}
+            <p class="mb-2">
+              <span class="text-muted text-decoration-line-through">{{ product.old_price }} ৳</span>
+              <span class="fw-bold text-danger ms-2">{{ product.price }} ৳</span>
+              <span class="badge bg-success ms-2">-{{ product.discount_percentage }}%</span>
+            </p>
+          {% else %}
+            <p class="mb-2 fw-bold">{{ product.price }} ৳</p>
+          {% endif %}
+
+          <form action="{% url 'orders:cart_add' product.id %}" method="post" class="mt-auto d-flex gap-2">
+            {% csrf_token %}
+            <input type="number" name="quantity" value="1" min="1" class="form-control" style="max-width:80px;">
+            <input type="hidden" name="override" value="false">
+            <button type="submit" class="btn btn-dark">Add to Cart</button>
+          </form>
+        </div>
       </div>
-      <div class="badges">
-        {% if p.in_stock %}<span class="badge green">In Stock</span>{% else %}<span class="badge">Out of Stock</span>{% endif %}
-        {% if p.discount_percent %}<span class="discount">-{{ p.discount_percent }}%</span>{% endif %}
-      </div>
-      <div class="price">
-        <span class="new">৳ {{ p.price|floatformat:"0" }}</span>
-        {% if p.old_price %}<span class="old">৳ {{ p.old_price|floatformat:"0" }}</span>{% endif %}
-      </div>
-      <a class="btn" href="{% url 'catalog:product_detail' category.slug p.slug %}">Details</a>
     </div>
-  </div>
-{% empty %}
-  <p>No products in this category yet.</p>
-{% endfor %}
+  {% empty %}
+    <p>No products found in this category.</p>
+  {% endfor %}
 </div>
 
-{% if is_paginated %}
-  <div style="margin-top:16px">
-    {% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}">« Prev</a>{% endif %}
-    <span> Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }} </span>
-    {% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}">Next »</a>{% endif %}
-  </div>
-{% endif %}
 {% endblock %}
