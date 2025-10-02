@@ -8,7 +8,6 @@ from catalog import views as catalog_views
 urlpatterns = [
     path("admin/", admin.site.urls),
     path('accounts/', include('accounts.urls')),
-    path('', TemplateView.as_view(template_name='core/home.html'), name='home'),
     path(" ", include("core.urls")),
     path('catalog/', include('catalog.urls')),
     path("orders/", include("orders.urls")),
