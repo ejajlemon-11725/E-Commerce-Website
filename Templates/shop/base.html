@@ -1,0 +1,105 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>{% block title %}My Shop{% endblock %}</title>
+
+  <!-- Tailwind (CDN for speed while developing) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Swiper -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+  <script defer src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512" crossorigin="anonymous" referrerpolicy="no-referrer"/>
+
+  <style>
+    :root{ --brand:#F85606; }
+    .brand-bg{ background:var(--brand); }
+    .brand-text{ color:var(--brand); }
+    .card-shadow{ box-shadow: 0 6px 18px rgba(0,0,0,.06); }
+  </style>
+  {% block head %}{% endblock %}
+</head>
+<body class="bg-gray-50 text-slate-800">
+
+  <!-- BRAND BAR -->
+  <header class="brand-bg text-white">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex items-center gap-4">
+      <a href="{% url 'shop:home' %}" class="text-2xl font-bold tracking-wide">MyShop</a>
+
+      <!-- search -->
+      <form action="#" class="flex-1">
+        <div class="relative">
+          <input class="w-full rounded-md px-4 py-2 text-slate-800"
+                 placeholder="Search products, categories..." />
+          <button class="absolute right-1 top-1/2 -translate-y-1/2 bg-white text-slate-800 px-3 py-1 rounded-md">
+            <i class="fa fa-search"></i>
+          </button>
+        </div>
+      </form>
+
+      <!-- actions -->
+      <nav class="flex items-center gap-4 text-sm">
+        <a href="#" class="hover:underline">Help & Support</a>
+        <a href="#" class="hover:underline">Login</a>
+        <a href="#" class="hover:underline">Sign Up</a>
+
+        <!-- cart -->
+        <a href="#" class="relative">
+          <i class="fa-solid fa-cart-shopping text-2xl"></i>
+          <span id="cart-count"
+            class="absolute -top-2 -right-3 bg-white text-[var(--brand)] text-xs font-bold rounded-full px-1.5 py-0.5">
+            {{ cart_count }}
+          </span>
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- PAGE -->
+  <main class="max-w-7xl mx-auto px-4 py-6">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="border-t mt-6">
+    <div class="max-w-7xl mx-auto px-4 py-10 text-center text-sm text-slate-500">
+      ✨ Thank you for shopping with us © {{ now|date:"Y" }} ✨
+    </div>
+  </footer>
+
+  <!-- CSRF helper for fetch -->
+  <script>
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          if (cookie.substring(0, name.length + 1) === (name + '=')) {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
+        }
+      }
+      return cookieValue;
+    }
+
+    async function addToCart(productId){
+      const res = await fetch(`/add-to-cart/${productId}/`, {
+        method:'POST',
+        headers: {'X-CSRFToken': getCookie('csrftoken')},
+      });
+      const data = await res.json();
+      if (data.ok){
+        document.getElementById('cart-count').textContent = data.cart_count;
+      }
+    }
+  </script>
+
+  {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -32,12 +32,12 @@
         <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">🏠 Home</a></li>
        <li class="nav-item"><a class="nav-link" href="{% url 'catalog:category_list' %}">🛍️ Shop</a></li>
 
-        <li class="nav-item">
-         <a class="nav-link" href="{% url 'orders:cart_detail' %}">
-  🛒 Cart <span class="badge bg-light text-primary">{{ cart_count|default:0 }}</span>
-</a>
+<li class="nav-item">
+  <a class="nav-link" href="{% url 'orders:cart_detail' %}">
+    🛒 Cart <span class="badge bg-light text-primary">{{ cart|length }}</span>
+  </a>
+</li>
 
-        </li>
 
         {% if user.is_authenticated %}
           <li class="nav-item"><a class="nav-link" href="#">{{ user.username }}</a></li>
@@ -53,10 +53,6 @@
   </div>
 </nav>
 
-<nav>
-  <a href="{% url 'orders:cart_detail' %}">Cart ({{ cart|length }})</a>
-
-</nav>
 
 <!-- Messages -->
 <div class="container my-4">

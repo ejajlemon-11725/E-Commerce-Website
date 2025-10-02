@@ -1,4 +1,3 @@
-# orders/cart.py
 from decimal import Decimal
 
 CART_SESSION_ID = "cart"
@@ -35,7 +34,6 @@ class Cart:
             self.save()
 
     def __iter__(self):
-        # Import here to avoid circulars
         from catalog.models import Product
         product_ids = self.cart.keys()
         products = Product.objects.filter(id__in=product_ids)
@@ -48,11 +46,10 @@ class Cart:
             yield item
 
     def __len__(self):
-        return sum(item.get("qty", 0) for item in self.cart.values())
+        return sum(int(item["qty"]) for item in self.cart.values())
 
     @property
     def subtotal(self):
-        from decimal import Decimal
         return sum(Decimal(i.get("price", 0)) * i.get("qty", 0) for i in self.cart.values())
 
     @property
@@ -64,4 +61,6 @@ class Cart:
         self.save()
 
     def save(self):
+        # 🔥 FIXED: actually save cart into session
+        self.session[CART_SESSION_ID] = self.cart
         self.session.modified = True

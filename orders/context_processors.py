@@ -4,6 +4,7 @@ from .cart import Cart
 def cart_summary(request):
     cart = Cart(request)
     return {
-        "cart_quantity": len(cart),
+        "cart": cart,                 # ✅ return the cart object
+        "cart_count": len(cart),      # optional shortcut
         "cart_subtotal": cart.subtotal,
     }

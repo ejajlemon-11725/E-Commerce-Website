@@ -1,0 +1,90 @@
+{% extends "shop/base.html" %}
+{% block title %}Home | My Shop{% endblock %}
+
+{% block content %}
+
+<!-- HERO SLIDER -->
+<div class="grid grid-cols-12 gap-4">
+  <div class="col-span-12">
+    <div class="swiper hero-swiper rounded-xl overflow-hidden">
+      <div class="swiper-wrapper">
+        <!-- replace with your own banners in /static/img/ -->
+        <div class="swiper-slide"><img src="{% static 'img/hero1.jpg' %}" class="w-full h-64 object-cover" alt=""></div>
+        <div class="swiper-slide"><img src="{% static 'img/hero2.jpg' %}" class="w-full h-64 object-cover" alt=""></div>
+        <div class="swiper-slide"><img src="{% static 'img/hero3.jpg' %}" class="w-full h-64 object-cover" alt=""></div>
+      </div>
+      <div class="swiper-pagination"></div>
+      <div class="swiper-button-next"></div>
+      <div class="swiper-button-prev"></div>
+    </div>
+  </div>
+</div>
+
+<!-- FLASH SALE -->
+<section class="mt-8 bg-white rounded-xl p-4 card-shadow">
+  <div class="flex items-center justify-between mb-3">
+    <h2 class="text-xl font-semibold">Flash Sale</h2>
+    <a href="#" class="border px-3 py-1 rounded-md hover:bg-gray-50">SHOP ALL PRODUCTS</a>
+  </div>
+
+  {% if flash_sale %}
+    <div class="swiper flash-swiper">
+      <div class="swiper-wrapper">
+        {% for p in flash_sale %}
+          <div class="swiper-slide w-56">
+            {% include "shop/partials/_product_card.html" with p=p %}
+          </div>
+        {% endfor %}
+      </div>
+      <div class="swiper-button-next"></div>
+      <div class="swiper-button-prev"></div>
+    </div>
+  {% else %}
+    <p class="text-slate-500">No flash sale items right now.</p>
+  {% endif %}
+</section>
+
+<!-- FEATURED / ALL -->
+<section class="mt-8">
+  <h2 class="text-xl font-semibold mb-3">On Sale Now</h2>
+  {% if featured %}
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+      {% for p in featured %}
+        {% include "shop/partials/_product_card.html" with p=p %}
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="text-slate-500">Add some featured products from admin.</p>
+  {% endif %}
+</section>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+  new Swiper('.hero-swiper', {
+    loop: true,
+    autoplay: { delay: 3000 },
+    pagination: { el: '.hero-swiper .swiper-pagination', clickable: true },
+    navigation: {
+      nextEl: '.hero-swiper .swiper-button-next',
+      prevEl: '.hero-swiper .swiper-button-prev',
+    },
+  });
+
+  new Swiper('.flash-swiper', {
+    slidesPerView: 2,
+    spaceBetween: 12,
+    breakpoints: {
+      640: { slidesPerView: 3 },
+      768: { slidesPerView: 4 },
+      1024: { slidesPerView: 5 },
+      1280: { slidesPerView: 6 },
+    },
+    navigation: {
+      nextEl: '.flash-swiper .swiper-button-next',
+      prevEl: '.flash-swiper .swiper-button-prev',
+    },
+  });
+</script>
+{% endblock %}
