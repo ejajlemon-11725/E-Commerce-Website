@@ -1,11 +1,10 @@
-# accounts/forms.py
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
-from .models import CustomUser   # make sure this is your custom user model
+from .models import CustomUser  # Make sure you have CustomUser in models.py
 
 class SignUpForm(UserCreationForm):
-    email = forms.EmailField(required=True, help_text="Required. Enter a valid email address.")
+    email = forms.EmailField(required=True)
 
     class Meta:
         model = CustomUser
-        fields = ("username", "email", "password1", "password2")
+        fields = ('username', 'email', 'password1', 'password2')

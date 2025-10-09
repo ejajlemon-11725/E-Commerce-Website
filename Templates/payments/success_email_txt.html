@@ -1,0 +1,13 @@
+Hello {{ user.first_name }},
+
+We are happy to inform you that your payment has been successfully processed.
+
+Order ID: {{ order.id }}
+Amount Paid: {{ order.total|floatformat:2 }} BDT
+
+Thank you for shopping with us!
+
+If you have any questions, feel free to reply to this email.
+
+Best regards,
+{{ site_name }}

@@ -3,52 +3,59 @@
 
 {% block content %}
 <div class="container my-5">
-  <h1 class="text-center mb-4 text-primary fw-bold">🛒 Your Shopping Cart</h1>
+  <h1 class="text-center mb-4 text-primary">🛒 Your Shopping Cart</h1>
 
   <div class="card shadow-lg border-0 rounded-3">
     <div class="card-body p-4">
-      <table class="table table-hover align-middle text-center">
-        <thead class="table-primary">
-          <tr>
-            <th scope="col">Product</th>
-            <th scope="col">Qty</th>
-            <th scope="col">Price</th>
-            <th scope="col">Total</th>
-            <th scope="col">Action</th>
-          </tr>
-        </thead>
-<tbody>
-  {% for item in cart %}
-    <tr>
-      <td class="fw-semibold">{{ item.product.title }}</td>
-      <td>{{ item.qty }}</td>               <!-- FIXED -->
-      <td>{{ item.price }} ৳</td>
-      <td class="fw-bold text-success">{{ item.total_price }} ৳</td>
-      <td>
-        <form action="{% url 'orders:cart_remove' item.product.id %}" method="post">
-          {% csrf_token %}
-          <button type="submit" class="btn btn-sm btn-outline-danger">✖ Remove</button>
-        </form>
-      </td>
-    </tr>
-  {% endfor %}
-</tbody>
-      </table>
+      {% if cart|length == 0 %}
+        <p class="text-center text-muted fs-5">Your cart is empty. Add some products to proceed.</p>
+      {% else %}
+        <table class="table table-hover align-middle text-center">
+          <thead class="table-primary">
+            <tr>
+              <th scope="col">Product</th>
+              <th scope="col">Qty</th>
+              <th scope="col">Price</th>
+              <th scope="col">Total</th>
+              <th scope="col">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in cart %}
+              <tr>
+                <td class="fw-semibold">{{ item.product.title }}</td>
+                <td>{{ item.qty }}</td>
+                <td>{{ item.price }} ৳</td>
+                <td class="fw-bold text-success">{{ item.total_price }} ৳</td>
+                <td>
+                  <form action="{% url 'orders:cart_remove' item.product.id %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-outline-danger">✖ Remove</button>
+                  </form>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
 
-      <div class="d-flex justify-content-between align-items-center mt-4">
-        <p class="h5">
-          <strong>Total:</strong>
-          <span class="text-primary">${{ cart.total_price }}</span>
-        </p>
+        <div class="d-flex justify-content-between align-items-center mt-4">
+          <p class="h5">
+            <strong>Total:</strong>
+            <span class="text-primary">{{ cart.total_price }} ৳</span>
+          </p>
 
-        {% if cart.is_empty %}
-          <p class="text-muted">Add some items to proceed.</p>
-        {% else %}
-          <a class="btn btn-lg btn-success shadow-sm px-4" href="{% url 'checkout' %}">
-            ✅ Checkout
-          </a>
-        {% endif %}
-      </div>
+          <div>
+            <form action="{% url 'orders:cart_clear' %}" method="post" style="display:inline-block;">
+              {% csrf_token %}
+              <button class="btn btn-outline-warning me-2" type="submit">Clear Cart</button>
+            </form>
+
+            <a class="btn btn-lg btn-success shadow-sm px-4" href="{% url 'orders:checkout' %}">
+              ✅ Checkout
+            </a>
+          </div>
+        </div>
+      {% endif %}
     </div>
   </div>
 </div>

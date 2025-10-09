@@ -5,7 +5,7 @@ app_name = "orders"
 
 urlpatterns = [
     path("checkout/", views.checkout_view, name="checkout"),
-    path("success/", views.success_view, name="order_success"),
+    path("success/", views.success_view, name="success"),
     path("cart/", views.cart_detail, name="cart_detail"),
     path("cart/add/<int:product_id>/", views.cart_add, name="cart_add"),
     path("cart/update/<int:product_id>/", views.cart_update, name="cart_update"),

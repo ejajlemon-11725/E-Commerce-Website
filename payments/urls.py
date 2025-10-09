@@ -21,7 +21,7 @@ urlpatterns = [
     path("nagad/create/<int:order_id>/", views.nagad_create, name="nagad_create"),
     path("nagad/callback/", views.nagad_callback, name="nagad_callback"),
 
-    # Generic results
-    path("success/", views.payment_success, name="success"),
+    # Generic results (UPDATED to accept order_id and use the new view)
+    path("success/<int:order_id>/", views.payment_success_view, name="payment_success"),
     path("fail/", views.payment_fail, name="fail"),
 ]
