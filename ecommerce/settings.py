@@ -70,11 +70,19 @@ DATABASES = {
     }
 }
 
-# Temporary (for testing in console)
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'your-email@gmail.com'         # Your Gmail address
+EMAIL_HOST_PASSWORD = 'your-app-password'        # Gmail App Password, NOT your Gmail login password
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+
 
 # Required
-DEFAULT_FROM_EMAIL = "no-reply@yourshop.com"
+
 SITE_NAME = "My E-Commerce Shop"
 
 
@@ -105,8 +113,6 @@ if not DEBUG:
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-DEFAULT_FROM_EMAIL = "webmaster@localhost"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 

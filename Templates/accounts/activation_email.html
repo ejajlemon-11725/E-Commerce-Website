@@ -1,7 +1,24 @@
-Hi {{ user.username }},
+<!DOCTYPE html>
+<html>
+  <body style="font-family: Arial, sans-serif; background-color: #f8f9fa; padding: 20px;">
+    <div style="max-width: 600px; margin: auto; background: white; border-radius: 10px; padding: 20px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+      <h2 style="color: #007bff;">Hello {{ user.username }}, 👋</h2>
 
-Please click the link below to activate your account:
+      <p>Thank you for signing up at <strong>{{ site_name|default:"Our Shop" }}</strong>!</p>
 
-http://{{ domain }}{% url 'activate' uidb64=uid token=token %}
+      <p>Please verify your email address by clicking the link below:</p>
 
-If you didn’t request this, ignore this email.
+      <p style="margin: 20px 0;">
+        <a href="http://{{ domain }}{% url 'activate' uidb64=uid token=token %}"
+           style="background-color: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
+          🔗 Activate My Account
+        </a>
+      </p>
+
+      <p>If you didn’t register, you can safely ignore this email.</p>
+
+      <hr style="margin-top: 30px;">
+      <small style="color: #6c757d;">This message was sent by {{ site_name|default:"Our Shop" }}.</small>
+    </div>
+  </body>
+</html>
