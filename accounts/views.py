@@ -9,9 +9,37 @@ from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth import login, logout
 from .forms import SignUpForm
 from .models import CustomUser
-
 from django.core.mail import send_mail
 from django.http import HttpResponse
+
+
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import get_user_model
+from orders.models import Order
+
+User = get_user_model()
+
+
+@login_required
+def profile(request):
+    """
+    Display user profile with username, email, and order history
+    """
+    user = request.user
+
+    # Get all orders for the logged-in user, ordered by most recent first
+    orders = Order.objects.filter(user=user).order_by('-created_at')
+
+    context = {
+        'user': user,
+        'orders': orders,
+    }
+
+    return render(request, 'accounts/profile.html', context)
+
+
+
+
 
 def send_test_email(request):
     subject = 'Test Email from Django'
@@ -56,7 +84,8 @@ def signup(request):
             except Exception as e:
                 messages.error(request, f"❌ Email sending failed: {e}")
 
-            return redirect("login")
+            return redirect("accounts:login")
+
     else:
         form = SignUpForm()
 
@@ -75,10 +104,10 @@ def activate(request, uidb64, token):
         user.is_active = True
         user.save()
         messages.success(request, "🎉 Your account has been activated! You can now log in.")
-        return redirect("login")
+        return redirect("accounts:login")
     else:
         messages.error(request, "⚠️ Activation link is invalid or expired.")
-        return redirect("signup")
+        return redirect("accounts:signup")
 
 
 # ------------------ CUSTOM LOGIN (Case-insensitive) ------------------

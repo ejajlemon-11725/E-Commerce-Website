@@ -1,23 +1,51 @@
 from django.shortcuts import get_object_or_404, redirect, render
-from django.contrib import messages
 from django.views.decorators.http import require_POST
 from django.urls import reverse
-from django.core.mail import send_mail
-from django.conf import settings
-from .models import Order, OrderItem
-from .cart import Cart
-from catalog.models import Product
-
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.core.mail import send_mail
 from django.conf import settings
-
 from .models import Order, OrderItem
 from .cart import Cart
 from catalog.models import Product
 
+from django.shortcuts import render, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.http import Http404
+from .models import Order
 
+
+@login_required
+def order_detail(request, order_id):
+    """
+    Display details of a specific order
+    Only the owner of the order can view it
+    """
+    order = get_object_or_404(Order, id=order_id)
+
+    # Make sure the user can only view their own orders
+    if order.user != request.user:
+        raise Http404("Order not found")
+
+    context = {
+        'order': order,
+    }
+
+    return render(request, 'orders/order_detail.html', context)
+
+
+@login_required
+def order_list(request):
+    orders = Order.objects.filter(user=request.user).order_by('-created_at')
+    context = {
+        'orders': orders
+    }
+    return render(request, 'orders/order_list.html', context)
+
+
+
+
+@login_required
 def checkout_view(request):
     cart = Cart(request)
 
@@ -30,8 +58,9 @@ def checkout_view(request):
     if request.method == "POST":
         email = request.POST.get("email")
 
-        # ✅ Create the order
+        # ✅ Create the order WITH USER
         order = Order.objects.create(
+            user=request.user if request.user.is_authenticated else None,  # ADD THIS
             email=email,
             total=cart.grand_total
         )
@@ -44,6 +73,8 @@ def checkout_view(request):
                 quantity=item["qty"],
                 price=item["price"],
             )
+
+        # ... rest of your code
 
         # ✅ Clear cart after checkout
         cart.clear()

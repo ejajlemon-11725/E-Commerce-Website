@@ -9,7 +9,7 @@
       <p>Please verify your email address by clicking the link below:</p>
 
       <p style="margin: 20px 0;">
-        <a href="http://{{ domain }}{% url 'activate' uidb64=uid token=token %}"
+        <a href="http://{{ domain }}{% url 'accounts:activate' uidb64=uid token=token %}"
            style="background-color: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
           🔗 Activate My Account
         </a>

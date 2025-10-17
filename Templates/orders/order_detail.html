@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <a href="{% url 'orders:order_list' %}" class="btn btn-secondary mb-3">Back to Profile</a>
+
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h3>Order #{{ order.id }}</h3>
+        </div>
+        <div class="card-body">
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <p><strong>Order Date:</strong> {{ order.created_at|date:"F d, Y - h:i A" }}</p>
+                    <p><strong>Last Updated:</strong> {{ order.updated_at|date:"F d, Y - h:i A" }}</p>
+                </div>
+                <div class="col-md-6 text-end">
+                    <p><strong>Customer:</strong> {{ order.user.username }}</p>
+                    <p><strong>Email:</strong> {{ order.email }}</p>
+                </div>
+            </div>
+
+            <h4>Order Items</h4>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in order.items.all %}
+                    <tr>
+                        <td>
+                            {% if item.product.image %}
+                            <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" style="width: 50px; height: 50px; object-fit: cover;">
+                            {% endif %}
+                            {{ item.product.name }}
+                        </td>
+                        <td>${{ item.price|floatformat:2 }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>${{ item.get_subtotal|floatformat:2 }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="3" class="text-end"><strong>Total:</strong></td>
+                        <td><strong>${{ order.total|floatformat:2 }}</strong></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
