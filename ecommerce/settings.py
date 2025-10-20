@@ -74,16 +74,15 @@ DATABASES = {
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
-EMAIL_HOST_USER = 'ejajahmed725@gmail.com'
-EMAIL_HOST_PASSWORD = 'sbzl dbyx bpie lqps'
+EMAIL_HOST_USER = 'lemonahmed160@gmail.com'
+EMAIL_HOST_PASSWORD = 'tpmfiwinrlzdxojs'  # ← Remove all spaces!
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
-
-
+DEFAULT_FROM_EMAIL = 'lemonahmed160@gmail.com'
 
 # Required
 
-SITE_NAME = "My E-Commerce Shop"
+SITE_NAME = "UAP E-Commerce Shop"
 
 
 AUTH_PASSWORD_VALIDATORS = [
